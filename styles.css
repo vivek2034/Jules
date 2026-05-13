@@ -7,6 +7,7 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -105,5 +106,303 @@ body {
     }
     .game-grid {
         grid-template-columns: 1fr;
+.game-container {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 900px;
+    width: 100%;
+}
+
+.game-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.game-header h1 {
+    color: #fff;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+    animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% {
+        text-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+    }
+    50% {
+        text-shadow: 0 4px 25px rgba(102, 126, 234, 0.8);
+    }
+}
+
+.game-info {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.score-box {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+    padding: 15px 25px;
+    border-radius: 10px;
+    border: 2px solid rgba(102, 126, 234, 0.5);
+    text-align: center;
+}
+
+.score-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.score-value {
+    color: #00ff88;
+    font-size: 2.5em;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+.game-status {
+    color: #fff;
+    font-size: 1.1em;
+    background: rgba(102, 126, 234, 0.2);
+    padding: 15px 25px;
+    border-radius: 10px;
+    border: 2px solid rgba(102, 126, 234, 0.5);
+}
+
+#gameStatus {
+    color: #00ff88;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+.game-canvas-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5), 0 10px 40px rgba(102, 126, 234, 0.3);
+    border: 3px solid rgba(102, 126, 234, 0.5);
+    position: relative;
+}
+
+.game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.game-over-overlay h2 {
+    color: #fff;
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 15px rgba(102, 126, 234, 0.8);
+}
+
+#playAgainBtn {
+    background: linear-gradient(135deg, #00ff88 0%, #00b8ff 100%);
+    color: #000;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.2em;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(0, 255, 136, 0.4);
+}
+
+#playAgainBtn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(0, 255, 136, 0.6);
+}
+
+#pongCanvas {
+    display: block;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    cursor: none;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    gap: 10px;
+}
+
+#resetBtn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1em;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#resetBtn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+#resetBtn:active {
+    transform: translateY(-1px);
+}
+
+.difficulty-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(102, 126, 234, 0.2);
+    padding: 0 15px;
+    border-radius: 25px;
+    border: 1px solid rgba(102, 126, 234, 0.5);
+}
+
+.difficulty-selector label {
+    color: #fff;
+    font-weight: bold;
+}
+
+#difficulty {
+    background: transparent;
+    color: #00ff88;
+    border: none;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+}
+
+#difficulty option {
+    background: #1a1a2e;
+    color: #fff;
+}
+
+.instructions {
+    background: rgba(102, 126, 234, 0.1);
+    border-left: 4px solid rgba(102, 126, 234, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.instructions h3 {
+    color: #00ff88;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.instructions ul {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+}
+
+.instructions li {
+    padding: 8px 0;
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+.instructions strong {
+    color: #667eea;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .game-container {
+        padding: 20px;
+    }
+
+    .game-header h1 {
+        font-size: 2em;
+    }
+
+    .game-info {
+        gap: 10px;
+    }
+
+    .score-box,
+    .game-status {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+
+    .score-value {
+        font-size: 2em;
+    }
+
+    #pongCanvas {
+        width: 100%;
+        height: auto;
+    }
+
+    .instructions h3 {
+        font-size: 1.1em;
+    }
+
+    .instructions li {
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        padding: 15px;
+    }
+
+    .game-header h1 {
+        font-size: 1.5em;
+    }
+
+    .game-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .score-box {
+        padding: 10px 20px;
+    }
+
+    .score-value {
+        font-size: 1.8em;
+    }
+
+    .instructions {
+        padding: 15px;
+    }
+
+    .instructions h3 {
+        font-size: 1em;
+    }
+
+    .instructions li {
+        font-size: 0.8em;
     }
 }
