@@ -5,44 +5,59 @@ const TILE_SIZE = 32;
 const MAP_ROWS = 15;
 const MAP_COLS = 15;
 
+const scoreElement = document.getElementById('score');
+let score = 0;
+
 // Audio
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
 
-function playBumpSound() {
+function playSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(100, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.1);
-
-    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-
     osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
 
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.1);
+    if (type === 'bump') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    } else if (type === 'item') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    }
 }
 
-// 0: grass, 1: tree, 2: water
+function playBumpSound() {
+    playSound('bump');
+}
+
+// 0: grass, 1: tree, 2: water, 3: item (on grass)
 const map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 1],
     [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 2, 2, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 2, 2, 2, 0, 1],
     [1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1],
-    [1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 3, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
     [1, 0, 2, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1],
     [1, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 1, 1, 0, 3, 0, 0, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ];
@@ -92,7 +107,7 @@ btnRight.addEventListener('touchend', (e) => { e.preventDefault(); keys.ArrowRig
 
 function canMoveTo(col, row) {
     if (col < 0 || col >= MAP_COLS || row < 0 || row >= MAP_ROWS) return false;
-    return map[row][col] === 0; // Only grass is walkable
+    return map[row][col] === 0 || map[row][col] === 3; // Grass and Items are walkable
 }
 
 function update() {
@@ -133,6 +148,14 @@ function update() {
             player.col = player.targetCol;
             player.row = player.targetRow;
             player.isMoving = false;
+
+            // Check for item collection
+            if (map[player.row][player.col] === 3) {
+                map[player.row][player.col] = 0; // Remove item
+                score += 10;
+                scoreElement.innerText = score;
+                playSound('item');
+            }
         }
     }
 }
@@ -147,9 +170,27 @@ function draw() {
             const x = c * TILE_SIZE;
             const y = r * TILE_SIZE;
 
-            if (tile === 0) { // Grass
+            if (tile === 0 || tile === 3) { // Grass (or grass with item)
                 ctx.fillStyle = '#7CFC00'; // LawnGreen
                 ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+
+                if (tile === 3) {
+                    // Draw Pokeball-like item
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    ctx.arc(x + TILE_SIZE/2, y + TILE_SIZE/2, 8, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = 'red';
+                    ctx.beginPath();
+                    ctx.arc(x + TILE_SIZE/2, y + TILE_SIZE/2, 8, Math.PI, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = 'black';
+                    ctx.beginPath();
+                    ctx.arc(x + TILE_SIZE/2, y + TILE_SIZE/2, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             } else if (tile === 1) { // Tree
                 ctx.fillStyle = '#228B22'; // ForestGreen
                 ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);

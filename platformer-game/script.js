@@ -30,6 +30,22 @@ function playSound(type) {
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.1);
+    } else if (type === 'stomp') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.15);
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+    } else if (type === 'die') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5);
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
     }
 }
 
@@ -67,6 +83,11 @@ let coins = [
     { x: 630, y: 200, width: 15, height: 15, collected: false },
     { x: 1050, y: 150, width: 15, height: 15, collected: false },
     { x: 1330, y: 200, width: 15, height: 15, collected: false },
+];
+
+let enemies = [
+    { x: 500, y: 320, width: 30, height: 30, vx: -2, alive: true, startX: 400, endX: 600 },
+    { x: 1100, y: 320, width: 30, height: 30, vx: -2, alive: true, startX: 1000, endX: 1300 }
 ];
 
 const keys = {
@@ -158,14 +179,55 @@ function update() {
         }
     });
 
+    // Enemy interaction
+    enemies.forEach(enemy => {
+        if (!enemy.alive) return;
+
+        // Move enemy
+        enemy.x += enemy.vx;
+        if (enemy.x <= enemy.startX || enemy.x + enemy.width >= enemy.endX) {
+            enemy.vx *= -1;
+        }
+
+        // Collision
+        if (player.x < enemy.x + enemy.width &&
+            player.x + player.width > enemy.x &&
+            player.y < enemy.y + enemy.height &&
+            player.y + player.height > enemy.y) {
+
+            // Stomp on top
+            if (player.vy > 0 && player.y + player.height - player.vy <= enemy.y + 10) {
+                enemy.alive = false;
+                player.vy = player.jumpStrength * 0.8; // Bounce
+                score += 50;
+                scoreElement.innerText = score;
+                playSound('stomp');
+            } else {
+                // Hit side - Die
+                die();
+            }
+        }
+    });
+
     // Death (falling off screen)
     if (player.y > canvas.height) {
-        player.x = 50;
-        player.y = 200;
-        player.vx = 0;
-        player.vy = 0;
-        cameraX = 0;
+        die();
     }
+}
+
+function die() {
+    playSound('die');
+    player.x = 50;
+    player.y = 200;
+    player.vx = 0;
+    player.vy = 0;
+    cameraX = 0;
+
+    // Reset enemies and coins (simple approach)
+    coins.forEach(c => c.collected = false);
+    enemies.forEach(e => { e.alive = true; e.x = e.startX + (e.endX - e.startX)/2; });
+    score = 0;
+    scoreElement.innerText = score;
 
     // Camera follow
     let targetCameraX = player.x - canvas.width / 3;
@@ -178,6 +240,11 @@ function update() {
         platforms.push({ x: lastX + 800 + Math.random() * 200, y: 350, width: 800, height: 50 });
         platforms.push({ x: lastX + 300, y: 250, width: 100, height: 20 });
         coins.push({ x: lastX + 340, y: 200, width: 15, height: 15, collected: false });
+
+        if (Math.random() > 0.5) {
+            let eX = lastX + 500;
+            enemies.push({ x: eX, y: 320, width: 30, height: 30, vx: -2, alive: true, startX: eX - 100, endX: eX + 100 });
+        }
     }
 }
 
@@ -204,6 +271,25 @@ function draw() {
             ctx.beginPath();
             ctx.arc(coin.x + coin.width/2, coin.y + coin.height/2, coin.width/2, 0, Math.PI * 2);
             ctx.fill();
+        }
+    });
+
+    // Draw enemies (Goomba style)
+    enemies.forEach(enemy => {
+        if (enemy.alive) {
+            ctx.fillStyle = '#8B0000'; // DarkRed
+
+            // Body
+            ctx.beginPath();
+            ctx.moveTo(enemy.x + enemy.width/2, enemy.y);
+            ctx.lineTo(enemy.x + enemy.width, enemy.y + enemy.height);
+            ctx.lineTo(enemy.x, enemy.y + enemy.height);
+            ctx.fill();
+
+            // Eyes
+            ctx.fillStyle = 'white';
+            ctx.fillRect(enemy.x + 8, enemy.y + 15, 4, 4);
+            ctx.fillRect(enemy.x + 18, enemy.y + 15, 4, 4);
         }
     });
 
