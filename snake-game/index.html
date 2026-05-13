@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">⬅️ Back to Hub</a>
+        <div class="game-header">
+            <h1>🐍 SNAKE GAME</h1>
+            <div class="game-info">
+                <div class="score-box">
+                    <div class="score-label">Score</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="score-box">
+                    <div class="score-label">High Score</div>
+                    <div class="score-value" id="highScore">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-canvas-wrapper">
+            <canvas id="snakeCanvas" width="400" height="400"></canvas>
+            <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
+                <h2>Game Over!</h2>
+                <button id="playAgainBtn">Play Again</button>
+            </div>
+            <div id="startOverlay" class="game-over-overlay">
+                <h2>Press Space to Start</h2>
+            </div>
+        </div>
+
+        <div class="controls-mobile">
+            <button id="upBtn">⬆️</button>
+            <div>
+                <button id="leftBtn">⬅️</button>
+                <button id="downBtn">⬇️</button>
+                <button id="rightBtn">➡️</button>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 How to Play</h3>
+            <ul>
+                <li><strong>Arrow Keys / WASD:</strong> Move the snake</li>
+                <li><strong>Space Bar:</strong> Start / Pause</li>
+                <li><strong>Objective:</strong> Eat the red apples to grow and increase your score.</li>
+                <li><strong>Watch out:</strong> Don't hit the walls or your own tail!</li>
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
