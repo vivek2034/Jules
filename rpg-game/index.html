@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pixel RPG</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <a href="../index.html" class="back-btn">⬅️ Back to Hub</a>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="gameCanvas" width="480" height="480"></canvas>
+        </div>
+
+        <div class="dpad">
+            <div class="dpad-row">
+                <button id="btnUp">🔼</button>
+            </div>
+            <div class="dpad-row">
+                <button id="btnLeft">◀️</button>
+                <div class="dpad-center"></div>
+                <button id="btnRight">▶️</button>
+            </div>
+            <div class="dpad-row">
+                <button id="btnDown">🔽</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
